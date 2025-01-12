@@ -3,6 +3,7 @@ import {Search} from "../components/Search.tsx";
 import {useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {UserData} from "../utils/api/interfaces/UserData.ts";
+import {Button} from "../components/Button/Button.tsx";
 
 export default function UsersPage() {
   const [userName, setUserName] = useState("");
@@ -41,12 +42,10 @@ export default function UsersPage() {
           <Search setValue={setUserName} placeholder={'Search user...'} setCurrentPage={setCurrentPage}/>
 
           <div className="mt-4 sm:ml-6 sm:mt-0 sm:flex-none">
-            <button
-                type="button"
-                className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            <Button variant={'primary'} size={"medium"} className={''}
             >
               Add user
-            </button>
+            </Button>
           </div>
         </div>
         <div className="mt-8 flow-root">
