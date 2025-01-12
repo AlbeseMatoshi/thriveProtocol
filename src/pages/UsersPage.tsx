@@ -1,6 +1,6 @@
 import UserAPI from "../utils/api/UserAPI.ts";
 
-export default function TeamPage() {
+export default function UsersPage() {
     const [{data}]= UserAPI.getAll()
   console.log(data,'helo')
   return (
