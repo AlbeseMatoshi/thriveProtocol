@@ -1,6 +1,8 @@
 import {RouteObject} from "react-router-dom";
 import LandingPage from "./pages/LandingPage.tsx";
 import DashboardPage from "./pages/DashboardPage.tsx";
+import TeamPage from "./pages/TeamPage.tsx";
+import Layout from "./components/Layout.tsx";
 
 // Guest routes that need no authentication
 const guestRoutes: RouteObject[] = [
@@ -9,8 +11,12 @@ const guestRoutes: RouteObject[] = [
         element: <LandingPage />,
     },
     {
-        path: '/dashboard',
-        element: <DashboardPage />,
+        path: '/',
+        element: <Layout />,
+        children: [
+            { path: '/dashboard', element: <DashboardPage /> },
+            { path: '/team', element: <TeamPage /> },
+        ],
     },
 ];
 
