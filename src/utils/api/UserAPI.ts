@@ -6,10 +6,13 @@ const useAxios = makeUseAxios({
     axios: API,
 })
 
-const getAll = () => {
-    return useAxios('/users') as UseAxiosResult<UserData>
+const getAll = (pageNumber: number = 1,userName?:string) => {
+    const queryParams: Record<string, string> = {pageNumber,userName};
+   const queryString = Object.entries(queryParams)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
+    return useAxios(`/users?${queryString}`) as UseAxiosResult<UserData>;
 }
-
 
 export default {
     getAll

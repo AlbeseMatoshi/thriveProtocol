@@ -15,7 +15,7 @@ export default function Header(){
                         <span className="sr-only">Your Company</span>
                         <img
                             alt=""
-                            src='../../public/thriveprotocol_logo.jpeg'
+                            src='/public/thriveprotocol_logo.jpeg'
                             className="h-8 w-auto"
                         />
                     </a>
