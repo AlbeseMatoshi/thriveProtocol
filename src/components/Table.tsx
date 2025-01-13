@@ -56,7 +56,7 @@ export const Table = <T,>({ data, columns, defaultSort }: TableProps<T>) => {
                 sortedData?.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                         {columns.map((col) => (
-                            <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}>{row[col.accessor]}</td>
+                            <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}>{row[col.accessor] as any}</td>
                         ))}
                     </tr>
                 ))

@@ -3,14 +3,19 @@ import {Search} from "../components/Search.tsx";
 import {useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {UserData} from "../utils/api/interfaces/UserData.ts";
-import {Button} from "../components/Button/Button.tsx";
 import {Table} from "../components/Table.tsx";
+import MultiSelectDropdwon from "../components/MultiSelectDropdown.tsx";
 
 export default function UsersPage() {
   const [userName, setUserName] = useState("");
   const [debouncedUserName] = useDebounceValue<string>(userName, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [localData, setLocalData] = useState<UserData[] | null>(null);
+  const [selectedColumns, setSelectedColumns] = useState<Set<string>>(new Set([
+    "id",
+    "name",
+    "email",
+  ])); // Default selected columns
 
   const [{ data: fetchedData }] = UserAPI.getAll(currentPage, localData ? undefined : debouncedUserName);
 
@@ -29,13 +34,22 @@ export default function UsersPage() {
     }
   }, [fetchedData]);
 
-  const columns = [
+  const allColumns = [
     { Header: "ID", accessor: "id" },
     { Header: "Name", accessor: "name" },
-    { Header: "Age", accessor: "username" },
+    { Header: "Username", accessor: "username" },
     { Header: "Email", accessor: "email" },
     { Header: "Website", accessor: "website" },
   ];
+  const filteredColumns = allColumns.filter((col) =>
+      selectedColumns.has(col.accessor as string)
+  );
+
+  const dropdownOptions = allColumns.map((col) => ({
+    label: col.Header,
+    value: col.accessor as string,
+  }));
+
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -47,17 +61,21 @@ export default function UsersPage() {
           </div>
           <Search setValue={setUserName} placeholder={'Search user...'} setCurrentPage={setCurrentPage}/>
 
-          <div className="mt-4 sm:ml-6 sm:mt-0 sm:flex-none">
-            <Button variant={'primary'} size={"medium"} className={''}
-            >
-              Add user
-            </Button>
-          </div>
+          <MultiSelectDropdwon formFieldName={'columns'} options={dropdownOptions}
+                               onChange={(item:any) => {
+                                 if(selectedColumns.has(item)) {
+                                   setSelectedColumns(() => new Set([...selectedColumns].filter(el => el != item)))
+                                 } else {
+                                    setSelectedColumns(() => new Set([...selectedColumns, item]))
+                                 }
+                               }}
+                               items={selectedColumns}
+          />
         </div>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-              <Table data={dataToDisplay} columns={columns} defaultSort={'asc'}/>
+              <Table data={dataToDisplay} columns={filteredColumns} defaultSort={'asc'}/>
             </div>
           </div>
         </div>
