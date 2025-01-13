@@ -1,20 +1,20 @@
 import {baseAPI as API} from "../config/axios.ts";
 import {makeUseAxios, UseAxiosResult} from 'axios-hooks'
-import {UserData} from "./interfaces/UserData.ts";
+import {PostData} from "./interfaces/PostData.ts";
 
 const useAxios = makeUseAxios({
     axios: API,
 })
 
-const getAll = (pageNumber: number = 1,username?:string) => {
-    const queryParams: Record<string, string> = {pageNumber};
-     if (username) {
-        queryParams.username = username;
+const getAll = (pageNumber: number = 1,title?:string) => {
+    const queryParams: Record<number, string> = {pageNumber};
+    if (title) {
+        queryParams.title = title;
     }
     const queryString = Object.entries(queryParams)
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
         .join('&');
-    return useAxios(`/users?${queryString}`) as UseAxiosResult<UserData>;
+    return useAxios(`/posts?${queryString}`) as UseAxiosResult<PostData>;
 }
 
 export default {
