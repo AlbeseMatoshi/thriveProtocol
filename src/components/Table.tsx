@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {sortData} from "../utils/util.ts";
 import {ArrowDownIcon, ArrowUpIcon} from "@heroicons/react/24/outline";
 
-interface Column<T> {
+export interface Column<T> {
     Header: string;
     accessor: keyof T;
 }
@@ -56,7 +56,7 @@ export const Table = <T,>({ data, columns, defaultSort }: TableProps<T>) => {
                 sortedData?.map((row, rowIndex) => (
                     <tr key={rowIndex}>
                         {columns.map((col) => (
-                            <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}>{row[col.accessor] as any}</td>
+                            <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}><p className={'truncate max-w-96'}>{row[col.accessor] as any}</p></td>
                         ))}
                     </tr>
                 ))
