@@ -2,9 +2,10 @@ import {Search} from "../components/Search.tsx";
 import {useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {PostData} from "../utils/api/interfaces/PostData.ts";
-import {Table} from "../components/Table.tsx";
+import {Column, Table} from "../components/Table.tsx";
 import MultiSelectDropdwon from "../components/MultiSelectDropdown.tsx";
 import PostAPI from "../utils/api/PostAPI.ts";
+import {Paginator} from "../components/Paginator.tsx";
 
 export default function PostsPage() {
   const [title, setTitle] = useState("");
@@ -15,16 +16,18 @@ export default function PostsPage() {
     "id",
     "title",
     "body",
-  ])); // Default selected columns
+  ]));
+  const [displayPerPage] = useState(10); // Number of items per page
 
 
-  const [{ data: fetchedData }] = PostAPI.getAll(currentPage, debouncedTitle);
+  const [{ data: fetchedData ,response}] = PostAPI.getAll(currentPage, displayPerPage, debouncedTitle);
 
+  console.log(response,'resi')
   // Use either fetched data or local filtered data(if less than 10 data are returned we dont make api calls for searching, we handle search on frontend side)
   const dataToDisplay = localData || fetchedData;
 
   useEffect(() => {
-    if (fetchedData?.length <= 10) {
+    if (fetchedData && fetchedData?.length <= 10) {
       setLocalData(fetchedData);
     } else {
       setLocalData(null);
@@ -47,7 +50,7 @@ export default function PostsPage() {
   ];
   const filteredColumns = allColumns.filter((col) =>
       selectedColumns.has(col.accessor as string)
-  );
+  ) as Column<PostData>[]
 
   const dropdownOptions = allColumns.map((col) => ({
     label: col.Header,
@@ -78,11 +81,21 @@ export default function PostsPage() {
         </div>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-              <Table data={dataToDisplay} columns={filteredColumns} defaultSort={'asc'}/>
-            </div>
+            {!!dataToDisplay && (
+                <>
+                  <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <Table data={dataToDisplay} columns={filteredColumns} defaultSort={{column:'id',direction :'asc'}}/>
+                  </div>
+                  <Paginator
+                      totalPages={(response?.headers?.['x-total-count'] / displayPerPage) || 1} initialPage={currentPage}
+                      onPageSelect={(e) => {
+                        setCurrentPage(e);
+                      }}/>
+                </>
+            )}
           </div>
         </div>
+
       </div>
   )
 }
