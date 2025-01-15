@@ -6,6 +6,14 @@ import {Column, Table} from "../components/Table.tsx";
 import MultiSelectDropdwon from "../components/MultiSelectDropdown.tsx";
 import PostAPI from "../utils/api/PostAPI.ts";
 import {Paginator} from "../components/Paginator.tsx";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "../components/ui/sheet.tsx";
+
 
 export default function PostsPage() {
   const [title, setTitle] = useState("");
@@ -26,6 +34,7 @@ export default function PostsPage() {
   // Use either fetched data or local filtered data(if less than 10 data are returned we dont make api calls for searching, we handle search on frontend side)
   const dataToDisplay = localData || fetchedData;
 
+  //when the component is first rendered, it checks if fetchedData is less than 10(if true localData is used to handle searching in frontend side)
   useEffect(() => {
     if (fetchedData && fetchedData?.length <= 10) {
       setLocalData(fetchedData);
@@ -34,6 +43,7 @@ export default function PostsPage() {
     }
   }, [fetchedData]);
 
+  //whenever user starts typing in search box, it filters the data if its local data
   useEffect(() => {
     if (localData) {
       const filtered = localData.filter((post) =>
@@ -56,6 +66,8 @@ export default function PostsPage() {
     label: col.Header,
     value: col.accessor as string,
   }));
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [viewPost, setViewPost] = useState<PostData>({} as PostData);
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -79,12 +91,56 @@ export default function PostsPage() {
                                items={selectedColumns}
           />
         </div>
+        <Sheet open={openModal} onOpenChange={(open) => setOpenModal(open)}>
+          <SheetContent>
+            <SheetHeader className={'mb-10'}>
+              <SheetTitle className={'text-base/7 font-semibold text-gray-900'}>Post Details</SheetTitle>
+              <SheetDescription className="mt-1 max-w-2xl text-sm/6 text-gray-500">
+                View or edit the details of the post with id {viewPost.id}
+              </SheetDescription>
+            </SheetHeader>
+            <div>
+              <div className="mt-6 border-t border-gray-100">
+                <dl className="divide-y divide-gray-100">
+                  <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
+                    <dt className="text-sm/6 font-medium text-gray-900">Id</dt>
+                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">{viewPost.id}</dd>
+                  </div>
+                  <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
+                    <dt className="text-sm/6 font-medium text-gray-900">Title</dt>
+                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">{viewPost.title}</dd>
+                  </div>
+                  <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
+                    <dt className="text-sm/6 font-medium text-gray-900">Body</dt>
+                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">{viewPost.body}</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             {!!dataToDisplay && (
                 <>
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <Table data={dataToDisplay} columns={filteredColumns} defaultSort={{column:'id',direction :'asc'}}/>
+                    <Table data={dataToDisplay} columns={filteredColumns} defaultSort={{column:'id',direction :'asc'}} actions={[
+                      {
+                        placeholder: 'View',
+                        onClick: (post: PostData) => {
+                          setViewPost(post);
+                          setOpenModal(true);
+                        },
+                        classNames:'text-gray-900'
+                      },
+                      {
+                        placeholder: 'Delete',
+                        onClick: (post: PostData) => {
+                          window.confirm("Are you sure that you want to delete the post with title " + post.title);
+                        },
+                        classNames:'text-red-500'
+                      }
+                    ]}/>
                   </div>
                   <Paginator
                       totalPages={(response?.headers?.['x-total-count'] / displayPerPage) || 1} initialPage={currentPage}
@@ -95,7 +151,6 @@ export default function PostsPage() {
             )}
           </div>
         </div>
-
       </div>
   )
 }
