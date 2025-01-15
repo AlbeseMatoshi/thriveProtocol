@@ -1,7 +1,6 @@
 
 
 This project leverages modern web development tools and frameworks to build a responsive and feature-rich application. The goal is to deliver an efficient and user-friendly experience, incorporating advanced techniques for managing data, forms, and UI interactions.
-Features
 ## Technologies Used
 
 - Frontend Framework: React with ViteJS for fast development and optimized builds.
@@ -24,10 +23,10 @@ Features
 
 - Local Storage: Used to save drafts of edited posts.
 - Dynamic Table Component: A versatile table component with:
-- Row selection and selection-based callbacks.
-- Dynamic actions tied to user-selected rows.
-- Built-in sorting and filtering functions.
-- Pagination for efficient data navigation.
+   - Row selection and selection-based callbacks.
+   - Dynamic actions tied to user-selected rows.
+   - Built-in sorting and filtering functions.
+   - Pagination for efficient data navigation.
 
 ### Filtering Optimization
 
