@@ -143,17 +143,17 @@ export const PostDetails = ({post}: { post: PostData }) => {
                         </dl>
                     </div>
                 </div>
-                <div className={'flex gap-2 justify-end'}>
+                <div className={'flex gap-2 justify-end '}>
                     {(formState.isDirty || localPostData != undefined) && (
-                        <>
-                            <Button type="button" variant={'destructive'} onClick={() => {
+                        <div className={'flex flex-wrap'}>
+                            <Button className={'mx-2'} type="button" variant={'destructive'} onClick={() => {
                                 removePostLocalData();
                                 reset(post);
                             }}>Discard draft</Button>
                             <Button type="button" variant={'outline'} onClick={handleSubmit(saveAsDraft)}>
                                 {isDirty ? 'Save as draft' : 'Saved as draft'}
                             </Button>
-                        </>
+                        </div>
                     )}
                     <Button disabled={!(formState.isDirty || localPostData != undefined)} type="submit">Submit</Button>
                 </div>

@@ -17,12 +17,12 @@ export default function MultiSelectDropdown({
         <label className="relative">
             <input type="checkbox" className="hidden peer" />
 
-                <p className={'mx-3 border border-gray-300 p-1.5 rounded-lg px-7 text-gray-900 text-sm text-bold flex'}>
+                <p className={'mx-0 sm:mx-3 mt-4 sm:mt-0 border border-gray-300 p-1.5 rounded-lg px-3 sm:px-7 text-gray-900 text-sm text-bold flex'}>
                     <span>Dropdown</span>
                     <span className={'ml-3'}><ArrowUturnDownIcon className={'size-3 mt-1'}/></span>
                 </p>
 
-            <div className="absolute bg-white ml-4 mt-1 rounded-lg w-36 border transition-opacity opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto">
+            <div className="absolute bg-white ml-0 sm:ml-4 mt-1 rounded-lg w-36 border transition-opacity opacity-0 pointer-events-none peer-checked:opacity-100 peer-checked:pointer-events-auto">
                 <ul>
                     {options?.map((option) => (
                         <li key={option.value}>

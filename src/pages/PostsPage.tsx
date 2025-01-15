@@ -138,7 +138,7 @@ export default function PostsPage() {
                 </div>
                 <Sheet open={openModal} onOpenChange={(open) => setOpenModal(open)}>
                     <SheetContent>
-                        <SheetHeader className={'mb-10'}>
+                        <SheetHeader className={'mb-10 text-left'}>
                             <SheetTitle className={'text-base/7 font-semibold text-gray-900'}>Post Details</SheetTitle>
                             <SheetDescription className="mt-1 max-w-2xl text-sm/6 text-gray-500">
                                 View or edit the details of the post with id {viewPost.id}
