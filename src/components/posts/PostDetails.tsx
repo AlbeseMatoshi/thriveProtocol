@@ -25,8 +25,8 @@ export const PostDetails = ({post}: { post: PostData }) => {
     const mutatedPost = localPostData ?? post;
     const formSchema = z.object({
         id: z.number(),
-        title:z.string(),
-        body:z.string(),
+        title:z.string().min(5),
+        body:z.string().min(5),
     })
     const form = useForm<z.infer<typeof formSchema>>({
         resolver:zodResolver(formSchema),
@@ -113,9 +113,6 @@ export const PostDetails = ({post}: { post: PostData }) => {
                                                     <Input placeholder="Thrive coin is the best coin"
                                                            onInput={() => setIsDirty(true)} {...field} />
                                                 </FormControl>
-                                                <FormDescription>
-                                                    This is the post title
-                                                </FormDescription>
                                                 <FormMessage/>
                                             </FormItem>
                                         )}
@@ -137,9 +134,6 @@ export const PostDetails = ({post}: { post: PostData }) => {
                                                         rows={10}
                                                         onInput={() => setIsDirty(true)} {...field}
                                                     /> </FormControl>
-                                                <FormDescription>
-                                                    Enter your post description.
-                                                </FormDescription>
                                                 <FormMessage/>
                                             </FormItem>
                                         )}

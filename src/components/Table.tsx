@@ -8,16 +8,20 @@ export interface Column<T> {
     accessor: keyof T;
 }
 interface TableProps<T> {
+    enableRowSelection?: boolean,
+    onRowSelect?: (selectedRows: T[]) => void,
+    uniqueKey: keyof T,
     data: T[];
     columns: Column<T>[];
     defaultSort?: { column: keyof T; direction: "asc" | "desc" };
-    actions?: {classNames?: string, placeholder: string, onClick: (row: T) => void}[]
+    actions?: {classNames?: string, placeholder: string, onClick: (row: T) => void}[],
 }
 
-export const Table = <T,>({ data, columns, defaultSort, actions }: TableProps<T>) => {
+export const Table = <T,>({ data, columns, uniqueKey, defaultSort, actions, enableRowSelection, onRowSelect }: TableProps<T>) => {
     const [sortBy, setSortBy] = useState<keyof T | null>(defaultSort?.column || null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">(defaultSort?.direction || "asc");
     const [sortedData, setSortedData] = useState(data);
+    const [selectedRows, setSelectedRows] = useState<T[]>([]);
     useEffect(() => {
         if (sortBy) {
             setSortedData(sortData(data, sortBy, sortDirection));
@@ -37,6 +41,9 @@ export const Table = <T,>({ data, columns, defaultSort, actions }: TableProps<T>
             <table className="min-w-full divide-y divide-gray-300">
                 <thead>
                 <tr>
+                    {enableRowSelection && (
+                        <th></th>
+                    )}
                     {columns.map((col) => (
                         <th className={'py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0'}
                             key={col.accessor as string}
@@ -61,17 +68,35 @@ export const Table = <T,>({ data, columns, defaultSort, actions }: TableProps<T>
                 {sortedData?.length > 0 ? (
                     sortedData?.map((row, rowIndex) => (
                         <tr key={rowIndex}>
+                            {enableRowSelection && (
+                                <td>
+                                    <input className={'mr-5'} type={'checkbox'} onClick={(e) => {
+                                        if ((e.target as HTMLInputElement)?.checked) {
+                                            const _rows = [...selectedRows, row];
+                                            setSelectedRows(_rows);
+                                            if (onRowSelect) {
+                                                onRowSelect(_rows);
+                                            }
+                                        } else {
+                                            const _rows = [...selectedRows].filter(el => el[uniqueKey] != row[uniqueKey]);
+                                            setSelectedRows(_rows);
+                                            if (onRowSelect) {
+                                                onRowSelect(_rows);
+                                            }
+                                    }}} />
+                                </td>
+                            )}
                             {columns.map((col) => (
                                 <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}><p className={'truncate max-w-96'}>
                                     {row[col.accessor] as string}
                                 </p></td>
                             ))}
                             {!!actions && (
-                                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0 text-center">
+                                <td className="whitespace-nowrap py-4 pl-4 pr-0 text-sm font-medium text-gray-900 sm:pl-0 text-center">
                                     {actions.map((action,index) => (
                                         <button
                                             key={index}
-                                            className={cn("hover:underline mr-1", action.classNames)}
+                                            className={cn("hover:underline mr-2", action.classNames)}
                                             onClick={() => action.onClick(row)
 
                                         }

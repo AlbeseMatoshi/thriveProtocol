@@ -83,7 +83,7 @@ export default function UsersPage() {
             {!!dataToDisplay && (
                 <>
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <Table data={dataToDisplay} columns={filteredColumns}
+                    <Table uniqueKey={'id'} data={dataToDisplay} columns={filteredColumns}
                            defaultSort={{column: 'id', direction: 'asc'}}/>
                   </div>
                   <Paginator
