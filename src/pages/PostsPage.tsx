@@ -2,7 +2,6 @@ import {useContext, useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {PostData} from "../utils/api/interfaces/PostData.ts";
 import {Column, Table} from "../components/Table.tsx";
-import MultiSelectDropdown from "../components/MultiSelectDropdown.tsx";
 import PostAPI from "../utils/api/PostAPI.ts";
 import {Paginator} from "../components/Paginator.tsx";
 import {
@@ -26,11 +25,6 @@ export default function PostsPage() {
     const [debouncedTitle] = useDebounceValue<string>(title, 500);
     const [currentPage, setCurrentPage] = useState(1);
     const [localData, setLocalData] = useState<PostData[] | null>(null);
-    const [selectedColumns, setSelectedColumns] = useState<Set<string>>(new Set([
-        "id",
-        "title",
-        "body",
-    ]));
     const [displayPerPage] = useState(10); // Number of items per page
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [viewPost, setViewPost] = useState<PostData>({} as PostData);
@@ -76,15 +70,8 @@ export default function PostsPage() {
         {Header: "ID", accessor: "id"},
         {Header: "Title", accessor: "title"},
         {Header: "Body", accessor: "body"},
-    ];
-    const filteredColumns = allColumns.filter((col) =>
-        selectedColumns.has(col.accessor as string)
-    ) as Column<PostData>[]
+    ] as Column<PostData>[];
 
-    const dropdownOptions = allColumns.map((col) => ({
-        label: col.Header,
-        value: col.accessor as string,
-    }));
     useEffect(() => {
         if (deleteData == undefined || deleting) return;
         const status = deleteResponse?.status;
@@ -124,17 +111,6 @@ export default function PostsPage() {
                             This list of posts is retrieved from open API: https://jsonplaceholder.typicode.com/posts
                         </p>
                     </div>
-
-                    <MultiSelectDropdown formFieldName={'columns'} options={dropdownOptions}
-                                         onChange={(item: string) => {
-                                             if (selectedColumns.has(item)) {
-                                                 setSelectedColumns(() => new Set([...selectedColumns].filter(el => el != item)))
-                                             } else {
-                                                 setSelectedColumns(() => new Set([...selectedColumns, item]))
-                                             }
-                                         }}
-                                         items={selectedColumns}
-                    />
                 </div>
                 <Sheet open={openModal} onOpenChange={(open) => setOpenModal(open)}>
                     <SheetContent>
@@ -156,7 +132,7 @@ export default function PostsPage() {
                                         uniqueKey={'id'}
                                         enableRowSelection={true} data={dataToDisplay}
                                         onRowSelect={setSelectedPosts}
-                                        columns={filteredColumns}
+                                        columns={allColumns}
                                         defaultSort={{column: 'id', direction: 'asc'}} actions={[
                                         {
                                             placeholder: 'View',

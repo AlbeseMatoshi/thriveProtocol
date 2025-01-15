@@ -3,7 +3,6 @@ import {useContext, useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {UserData} from "../utils/api/interfaces/UserData.ts";
 import {Column, Table} from "../components/Table.tsx";
-import MultiSelectDropdwon from "../components/MultiSelectDropdown.tsx";
 import {Paginator} from "../components/Paginator.tsx";
 import {SearchContext} from "@/hooks/SearchContext.tsx";
 
@@ -12,11 +11,6 @@ export default function UsersPage() {
   const [debouncedUserName] = useDebounceValue<string>(userName, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [localData, setLocalData] = useState<UserData[] | null>(null);
-  const [selectedColumns, setSelectedColumns] = useState<Set<string>>(new Set([
-    "id",
-    "name",
-    "email",
-  ]));
   const [displayPerPage] = useState(10);
 
   const [{data: fetchedData, response}] = UserAPI.getAll(currentPage, displayPerPage, localData ? undefined : debouncedUserName);
@@ -42,15 +36,8 @@ export default function UsersPage() {
     {Header: "Username", accessor: "username"},
     {Header: "Email", accessor: "email"},
     {Header: "Website", accessor: "website"},
-  ];
-  const filteredColumns = allColumns.filter((col) =>
-      selectedColumns.has(col.accessor as string)
-  ) as Column<UserData>[];
+  ] as Column<UserData>[];
 
-  const dropdownOptions = allColumns.map((col) => ({
-    label: col.Header,
-    value: col.accessor as string,
-  }));
 
   useEffect(() => {
     setCurrentPage(1);
@@ -66,24 +53,13 @@ export default function UsersPage() {
               This list of users is retrieved from open API: https://jsonplaceholder.typicode.com/users
             </p>
           </div>
-
-          <MultiSelectDropdwon formFieldName={'columns'} options={dropdownOptions}
-                               onChange={(item: any) => {
-                                 if (selectedColumns.has(item)) {
-                                   setSelectedColumns(() => new Set([...selectedColumns].filter(el => el != item)))
-                                 } else {
-                                   setSelectedColumns(() => new Set([...selectedColumns, item]))
-                                 }
-                               }}
-                               items={selectedColumns}
-          />
         </div>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             {!!dataToDisplay && (
                 <>
                   <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                    <Table uniqueKey={'id'} data={dataToDisplay} columns={filteredColumns}
+                    <Table uniqueKey={'id'} data={dataToDisplay} columns={allColumns}
                            defaultSort={{column: 'id', direction: 'asc'}}/>
                   </div>
                   <Paginator

@@ -1,12 +1,14 @@
 import {useEffect, useState} from "react";
 import {sortData} from "../utils/util.ts";
 import {ArrowDownIcon, ArrowUpIcon} from "@heroicons/react/24/outline";
-import { cn } from "../lib/utils.ts";
+import {cn} from "../lib/utils.ts";
+import MultiSelectDropdown from "./MultiSelectDropdown.tsx";
 
 export interface Column<T> {
     Header: string;
     accessor: keyof T;
 }
+
 interface TableProps<T> {
     enableRowSelection?: boolean,
     onRowSelect?: (selectedRows: T[]) => void,
@@ -14,10 +16,18 @@ interface TableProps<T> {
     data: T[];
     columns: Column<T>[];
     defaultSort?: { column: keyof T; direction: "asc" | "desc" };
-    actions?: {classNames?: string, placeholder: string, onClick: (row: T) => void}[],
+    actions?: { classNames?: string, placeholder: string, onClick: (row: T) => void }[],
 }
 
-export const Table = <T,>({ data, columns, uniqueKey, defaultSort, actions, enableRowSelection, onRowSelect }: TableProps<T>) => {
+export const Table = <T, >({
+                               data,
+                               columns,
+                               uniqueKey,
+                               defaultSort,
+                               actions,
+                               enableRowSelection,
+                               onRowSelect
+                           }: TableProps<T>) => {
     const [sortBy, setSortBy] = useState<keyof T | null>(defaultSort?.column || null);
     const [sortDirection, setSortDirection] = useState<"asc" | "desc">(defaultSort?.direction || "asc");
     const [sortedData, setSortedData] = useState(data);
@@ -36,15 +46,37 @@ export const Table = <T,>({ data, columns, uniqueKey, defaultSort, actions, enab
         setSortDirection(newDirection);
     };
 
+    const [selectedColumns, setSelectedColumns] = useState<Set<string>>(new Set([...columns.map(el => el.accessor as string)]));
+
+    const dropdownOptions = columns.map((col) => ({
+        label: col.Header,
+        value: col.accessor as string,
+    }));
+
+
     return (
         <>
+            <div className={'flex md:justify-end mb-4'}>
+                <MultiSelectDropdown formFieldName={'columns'} options={dropdownOptions}
+                                     onChange={(item: string) => {
+                                         if (selectedColumns.has(item)) {
+                                             if (selectedColumns.size > 1) {
+                                                 setSelectedColumns(() => new Set([...selectedColumns].filter(el => el != item)))
+                                             }
+                                         } else {
+                                             setSelectedColumns(() => new Set([...selectedColumns, item]))
+                                         }
+                                     }}
+                                     items={selectedColumns}
+                />
+            </div>
             <table className="min-w-full divide-y divide-gray-300">
                 <thead>
                 <tr>
                     {enableRowSelection && (
                         <th></th>
                     )}
-                    {columns.map((col) => (
+                    {columns.filter(option => selectedColumns.has(option.accessor as string)).map((col) => (
                         <th className={'py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0'}
                             key={col.accessor as string}
                             onClick={() => handleSort(col.accessor)}>
@@ -83,23 +115,25 @@ export const Table = <T,>({ data, columns, uniqueKey, defaultSort, actions, enab
                                             if (onRowSelect) {
                                                 onRowSelect(_rows);
                                             }
-                                    }}} />
+                                        }
+                                    }}/>
                                 </td>
                             )}
-                            {columns.map((col) => (
-                                <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}><p className={'truncate max-w-96'}>
+                            {columns.filter(option => selectedColumns.has(option.accessor as string)).map((col) => (
+                                <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'}
+                                    key={col.accessor as string}><p className={'truncate max-w-96'}>
                                     {row[col.accessor] as string}
                                 </p></td>
                             ))}
                             {!!actions && (
                                 <td className="whitespace-nowrap py-4 pl-4 pr-0 text-sm font-medium text-gray-900 sm:pl-0 text-center">
-                                    {actions.map((action,index) => (
+                                    {actions.map((action, index) => (
                                         <button
                                             key={index}
                                             className={cn("hover:underline mr-2", action.classNames)}
                                             onClick={() => action.onClick(row)
 
-                                        }
+                                            }
                                         >
                                             {action.placeholder}
                                         </button>
@@ -110,7 +144,8 @@ export const Table = <T,>({ data, columns, uniqueKey, defaultSort, actions, enab
                     ))
                 ) : (
                     <tr>
-                        <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} colSpan={columns.length} style={{ textAlign: "center" }}>
+                        <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'}
+                            colSpan={columns.length} style={{textAlign: "center"}}>
                             No data available
                         </td>
                     </tr>
