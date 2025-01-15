@@ -5,6 +5,7 @@ import Layout from "./components/Layout.tsx";
 import UsersPage from "./pages/UsersPage.tsx";
 import PostsPage from "./pages/PostsPage.tsx";
 import SearchProvider from "@/hooks/SearchContext.tsx";
+import NotFound from "@/pages/NotFound.tsx";
 
 // Guest routes that need no authentication
 const guestRoutes: RouteObject[] = [
@@ -21,6 +22,7 @@ const guestRoutes: RouteObject[] = [
             { path: '/posts', element: <PostsPage /> },
         ],
     },
+    { path: '*', element: <NotFound /> },
 ];
 
 export const routes: RouteObject[] = [...guestRoutes];
