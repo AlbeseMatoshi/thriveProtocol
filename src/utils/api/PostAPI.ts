@@ -1,6 +1,7 @@
 import {baseAPI as API} from "../config/axios.ts";
 import {makeUseAxios, Options, UseAxiosResult} from 'axios-hooks'
 import {PostData} from "./interfaces/PostData.ts";
+import {AxiosPromise} from "axios";
 
 const useAxios = makeUseAxios({
     axios: API,
@@ -30,8 +31,13 @@ const remove = (postId: number, options: Options = {}) => {
     }, options)
 }
 
+const update = (request: PostData) => {
+    return API.put(`posts/${request.id}`, request) as AxiosPromise<Record<string,  never>>;
+}
+
 
 export default {
     getAll,
-    remove
+    remove,
+    update
 }

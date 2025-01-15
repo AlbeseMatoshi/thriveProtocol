@@ -16,6 +16,7 @@ import {
 import {ConfirmDeleteModal} from "../components/Modals/ConfirmDeleteModal.tsx";
 import {CheckCircleIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import {toast} from "../components/ui/use-toast.tsx";
+import {PostDetails} from "@/components/posts/PostDetails.tsx";
 
 
 export default function PostsPage() {
@@ -137,24 +138,7 @@ export default function PostsPage() {
                 View or edit the details of the post with id {viewPost.id}
               </SheetDescription>
             </SheetHeader>
-            <div>
-              <div className="mt-6 border-t border-gray-100">
-                <dl className="divide-y divide-gray-100">
-                  <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
-                    <dt className="text-sm/6 font-medium text-gray-900">Id</dt>
-                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">{viewPost.id}</dd>
-                  </div>
-                  <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
-                    <dt className="text-sm/6 font-medium text-gray-900">Title</dt>
-                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">{viewPost.title}</dd>
-                  </div>
-                  <div className="px-4 py-6 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-0">
-                    <dt className="text-sm/6 font-medium text-gray-900">Body</dt>
-                    <dd className="mt-1 text-sm/6 text-gray-700 sm:col-span-3 sm:mt-0">{viewPost.body}</dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
+            <PostDetails post={viewPost} />
           </SheetContent>
         </Sheet>
         <ConfirmDeleteModal open={openDeleteModal} setOpen={setOpenDeleteModal} onDelete={executeDelete}/>
