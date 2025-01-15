@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {sortData} from "../utils/util.ts";
 import {ArrowDownIcon, ArrowUpIcon} from "@heroicons/react/24/outline";
-import {cn} from "../lib/utils.ts";
+import { cn } from "@/utils/util.ts"
 import MultiSelectDropdown from "./MultiSelectDropdown.tsx";
 
 export interface Column<T> {
