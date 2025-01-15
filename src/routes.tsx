@@ -17,6 +17,7 @@ const guestRoutes: RouteObject[] = [
         path: '/',
         element: <SearchProvider><Layout /></SearchProvider>,
         children: [
+            { path: '', element: <DashboardPage /> },
             { path: '/dashboard', element: <DashboardPage /> },
             { path: '/users', element: <UsersPage /> },
             { path: '/posts', element: <PostsPage /> },

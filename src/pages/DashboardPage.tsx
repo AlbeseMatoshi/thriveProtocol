@@ -34,9 +34,8 @@ export default function DashboardPage() {
 
     return (
         <div className="mx-auto max-w-lg">
-            <h2 className="text-base font-semibold text-gray-900">Create your first project</h2>
-            <p className="mt-1 text-sm text-gray-500">Get started by selecting a template or start from an empty
-                project.</p>
+            <h2 className="text-base font-semibold text-gray-900">Welcome to Thrive Protocol Dashboard</h2>
+            <p className="mt-1 text-sm text-gray-500">Get started by navigating in our application</p>
             <ul role="list" className="mt-6 divide-y divide-gray-200 border-b border-t border-gray-200">
                 {items.map((item, itemIdx) => (
                     <li key={itemIdx}>

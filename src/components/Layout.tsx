@@ -18,8 +18,8 @@ import {SearchContext} from "@/hooks/SearchContext.tsx";
 
 
 const userNavigation = [
-    {name: 'Your profile', href: '#'},
-    {name: 'Sign out', href: '#'},
+    {name: 'Thrive app', href: 'https://app.thrivecoin.com/', target: '_new'},
+    {name: 'Landing page', href: '/landing'},
 ]
 
 
@@ -95,6 +95,7 @@ export default function Layout() {
                                             <MenuItem key={item.name}>
                                                 <Link
                                                     to={item.href}
+                                                    target={item.target}
                                                     className="block px-3 py-1 text-sm/6 text-gray-900 data-[focus]:bg-gray-50 data-[focus]:outline-none"
                                                 >
                                                     {item.name}
