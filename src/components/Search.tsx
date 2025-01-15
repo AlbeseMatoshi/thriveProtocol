@@ -1,4 +1,4 @@
-export const Search =({setValue, placeholder, setCurrentPage})=>{
+export const Search =({setValue, placeholder, setCurrentPage}:{setValue:(value:string)=>void, placeholder:string, setCurrentPage:(page:number)=>void})=>{
     return(
         <>
             <input
@@ -6,7 +6,7 @@ export const Search =({setValue, placeholder, setCurrentPage})=>{
                 type="text"
                 placeholder={placeholder}
                 onInput={(e) => {
-                    setValue(e.target.value)
+                    setValue((e.target as HTMLInputElement).value as string)
                     setCurrentPage(1)
                 }}
             />

@@ -1,5 +1,5 @@
 import {baseAPI as API} from "../config/axios.ts";
-import {makeUseAxios, UseAxiosResult} from 'axios-hooks'
+import {makeUseAxios, Options, UseAxiosResult} from 'axios-hooks'
 import {PostData} from "./interfaces/PostData.ts";
 
 const useAxios = makeUseAxios({
@@ -23,6 +23,15 @@ const getAll = (pageNumber: number = 1,_limit:number, title?:string) => {
     return useAxios(`/posts?${queryString}`) as UseAxiosResult<Required<PostData>[]>;
 }
 
+const remove = (postId: number, options: Options = {}) => {
+    return useAxios({
+        url: `/posts/${postId}`,
+        method: 'DELETE'
+    }, options)
+}
+
+
 export default {
-    getAll
+    getAll,
+    remove
 }

@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {PostData} from "../utils/api/interfaces/PostData.ts";
 import {Column, Table} from "../components/Table.tsx";
-import MultiSelectDropdwon from "../components/MultiSelectDropdown.tsx";
+import MultiSelectDropdown from "../components/MultiSelectDropdown.tsx";
 import PostAPI from "../utils/api/PostAPI.ts";
 import {Paginator} from "../components/Paginator.tsx";
 import {
@@ -13,6 +13,9 @@ import {
   SheetHeader,
   SheetTitle
 } from "../components/ui/sheet.tsx";
+import {ConfirmDeleteModal} from "../components/Modals/ConfirmDeleteModal.tsx";
+import {CheckCircleIcon, XMarkIcon} from "@heroicons/react/24/outline";
+import {toast} from "../components/ui/use-toast.tsx";
 
 
 export default function PostsPage() {
@@ -26,11 +29,21 @@ export default function PostsPage() {
     "body",
   ]));
   const [displayPerPage] = useState(10); // Number of items per page
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [viewPost, setViewPost] = useState<PostData>({} as PostData);
+  const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false)
+  const [postToDelete, setPostToDelete] = useState<PostData>({} as PostData)
 
 
-  const [{ data: fetchedData ,response}] = PostAPI.getAll(currentPage, displayPerPage, debouncedTitle);
+  const [{ data: fetchedData ,response}, refetchPosts] = PostAPI.getAll(currentPage, displayPerPage, debouncedTitle);
 
-  console.log(response,'resi')
+  const [{
+    data:deleteData,
+    loading:deleting,
+    error:errorOnDelete, response:deleteResponse}, executeDelete] = PostAPI.remove(postToDelete.id as number, {
+    manual:true
+  })
+
   // Use either fetched data or local filtered data(if less than 10 data are returned we dont make api calls for searching, we handle search on frontend side)
   const dataToDisplay = localData || fetchedData;
 
@@ -66,8 +79,33 @@ export default function PostsPage() {
     label: col.Header,
     value: col.accessor as string,
   }));
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [viewPost, setViewPost] = useState<PostData>({} as PostData);
+  useEffect(() => {
+    if (deleteData == undefined || deleting) return;
+    const status = deleteResponse?.status;
+    if(status == 200 || status == 204){
+      toast({
+        action: (
+            <CheckCircleIcon className="mr-2 text-green-500 w-6"/>
+        ),
+        key: postToDelete.id,
+        title: "Success",
+        description: 'Successfully deleted post',
+        duration: 3000,
+        variant: 'success'
+      });
+      refetchPosts();
+    }else{
+      toast({
+         action: (
+            <XMarkIcon className="mr-2 text-red-500 w-6"/>
+        ),
+        title: "Error",
+        description: "Failed to delete the post. " + (errorOnDelete?.message ?? ""),
+        duration: 3000,
+        variant: "error",
+      });
+    }
+  }, [deleteResponse]);
 
   return (
       <div className="px-4 sm:px-6 lg:px-8">
@@ -80,8 +118,8 @@ export default function PostsPage() {
           </div>
           <Search setValue={setTitle} placeholder={'Search post...'} setCurrentPage={setCurrentPage}/>
 
-          <MultiSelectDropdwon formFieldName={'columns'} options={dropdownOptions}
-                               onChange={(item:any) => {
+          <MultiSelectDropdown formFieldName={'columns'} options={dropdownOptions}
+                               onChange={(item:string) => {
                                  if(selectedColumns.has(item)) {
                                    setSelectedColumns(() => new Set([...selectedColumns].filter(el => el != item)))
                                  } else {
@@ -119,6 +157,7 @@ export default function PostsPage() {
             </div>
           </SheetContent>
         </Sheet>
+        <ConfirmDeleteModal open={openDeleteModal} setOpen={setOpenDeleteModal} onDelete={executeDelete}/>
         <div className="mt-8 flow-root">
           <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
             {!!dataToDisplay && (
@@ -136,7 +175,8 @@ export default function PostsPage() {
                       {
                         placeholder: 'Delete',
                         onClick: (post: PostData) => {
-                          window.confirm("Are you sure that you want to delete the post with title " + post.title);
+                          setOpenDeleteModal(true);
+                          setPostToDelete(post)
                         },
                         classNames:'text-red-500'
                       }

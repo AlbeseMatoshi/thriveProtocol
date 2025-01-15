@@ -8,10 +8,7 @@ import {
     TransitionChild,
 } from '@headlessui/react'
 import {
-    CalendarIcon,
-    ChartPieIcon,
     Cog6ToothIcon,
-    DocumentDuplicateIcon,
     FolderIcon,
     HomeIcon,
     UsersIcon,

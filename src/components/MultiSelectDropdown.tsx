@@ -9,7 +9,7 @@ export default function MultiSelectDropdown({
     formFieldName: string,
     items: Set<string>,
     options: {value: string, label: string}[],
-    onChange: Function,
+    onChange: (value: string) => void,
 }) {
 
 
