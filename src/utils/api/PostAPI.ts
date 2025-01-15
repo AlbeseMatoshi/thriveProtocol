@@ -16,7 +16,7 @@ const getAll = (pageNumber: number = 1,_limit:number, title?:string) => {
     };
     // title is used for searching
     if (title) {
-        queryParams.title = title;
+        queryParams.title_like = title;
     }
     const queryString = Object.entries(queryParams)
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)

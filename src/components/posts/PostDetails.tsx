@@ -16,15 +16,20 @@ import {toast} from "@/hooks/use-toast.ts";
 import {useState} from "react";
 import PostAPI from "@/utils/api/PostAPI.ts";
 import {CheckCircleIcon, XMarkIcon} from "@heroicons/react/24/outline";
-
+import { z } from "zod"
+import {zodResolver} from "@hookform/resolvers/zod";
 export const PostDetails = ({post}: { post: PostData }) => {
 
     const [localPostData, setLocalPostData, removePostLocalData] = useLocalStorage<PostData | undefined>('post-' + post.id, undefined);
 
     const mutatedPost = localPostData ?? post;
-
-    console.log({mutatedPost, localPostData, post});
-    const form = useForm({
+    const formSchema = z.object({
+        id: z.number(),
+        title:z.string(),
+        body:z.string(),
+    })
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver:zodResolver(formSchema),
         mode: "all",
         defaultValues: {
             id: mutatedPost.id,
@@ -34,8 +39,8 @@ export const PostDetails = ({post}: { post: PostData }) => {
     });
     const {handleSubmit, control, formState, reset} = form;
 
-    const onSubmit = (data) => {
-        PostAPI.update(data as PostData).then((res) => {
+    const onSubmit = (data: z.infer<typeof formSchema>) => {
+        PostAPI.update(data as PostData).then(() => {
             toast({
                 action: (
                     <CheckCircleIcon className="mr-2 text-green-500 w-6"/>
@@ -65,16 +70,15 @@ export const PostDetails = ({post}: { post: PostData }) => {
 
     const [isDirty, setIsDirty] = useState(false);
 
-    const saveAsDraft = (data) => {
+    const saveAsDraft = (data: z.infer<typeof formSchema>) => {
         setLocalPostData(data as PostData);
         setIsDirty(false);
     }
 
-
     return (
 
         <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit, console.log)} className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 <div>
                     <div className="mt-6 border-t border-gray-100">
                         <dl className="divide-y divide-gray-100">

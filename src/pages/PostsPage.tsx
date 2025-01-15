@@ -1,5 +1,4 @@
-import {Search} from "../components/Search.tsx";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {PostData} from "../utils/api/interfaces/PostData.ts";
 import {Column, Table} from "../components/Table.tsx";
@@ -17,10 +16,13 @@ import {ConfirmDeleteModal} from "../components/Modals/ConfirmDeleteModal.tsx";
 import {CheckCircleIcon, XMarkIcon} from "@heroicons/react/24/outline";
 import {toast} from "../components/ui/use-toast.tsx";
 import {PostDetails} from "@/components/posts/PostDetails.tsx";
+import {SearchContext} from "@/hooks/SearchContext.tsx";
 
 
 export default function PostsPage() {
-  const [title, setTitle] = useState("");
+  // const [title, setTitle] = useState("");
+  const { value: title } = useContext(SearchContext);
+
   const [debouncedTitle] = useDebounceValue<string>(title, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [localData, setLocalData] = useState<PostData[] | null>(null);
@@ -50,7 +52,7 @@ export default function PostsPage() {
 
   //when the component is first rendered, it checks if fetchedData is less than 10(if true localData is used to handle searching in frontend side)
   useEffect(() => {
-    if (fetchedData && fetchedData?.length <= 10) {
+    if (fetchedData && displayPerPage <= (response?.headers['x-total-count'] ?? -1)) {
       setLocalData(fetchedData);
     } else {
       setLocalData(null);
@@ -65,6 +67,7 @@ export default function PostsPage() {
       );
       setLocalData(filtered);
     }
+    setCurrentPage(1);
   }, [debouncedTitle]);
 
   const allColumns = [
@@ -117,7 +120,6 @@ export default function PostsPage() {
               This list of posts is retrieved from open API:   https://jsonplaceholder.typicode.com/posts
             </p>
           </div>
-          <Search setValue={setTitle} placeholder={'Search post...'} setCurrentPage={setCurrentPage}/>
 
           <MultiSelectDropdown formFieldName={'columns'} options={dropdownOptions}
                                onChange={(item:string) => {

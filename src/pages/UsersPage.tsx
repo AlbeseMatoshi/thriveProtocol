@@ -1,14 +1,14 @@
 import UserAPI from "../utils/api/UserAPI.ts";
-import {Search} from "../components/Search.tsx";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {useDebounceValue} from "usehooks-ts";
 import {UserData} from "../utils/api/interfaces/UserData.ts";
 import {Column, Table} from "../components/Table.tsx";
 import MultiSelectDropdwon from "../components/MultiSelectDropdown.tsx";
 import {Paginator} from "../components/Paginator.tsx";
+import {SearchContext} from "@/hooks/SearchContext.tsx";
 
 export default function UsersPage() {
-  const [userName, setUserName] = useState("");
+  const { value: userName } = useContext(SearchContext);
   const [debouncedUserName] = useDebounceValue<string>(userName, 500);
   const [currentPage, setCurrentPage] = useState(1);
   const [localData, setLocalData] = useState<UserData[] | null>(null);
@@ -17,7 +17,7 @@ export default function UsersPage() {
     "name",
     "email",
   ]));
-  const [displayPerPage] = useState(5);
+  const [displayPerPage] = useState(10);
 
   const [{data: fetchedData, response}] = UserAPI.getAll(currentPage, displayPerPage, localData ? undefined : debouncedUserName);
 
@@ -29,7 +29,7 @@ export default function UsersPage() {
       : fetchedData;
 
   useEffect(() => {
-    if (fetchedData && fetchedData.length <= 10) {
+    if (fetchedData && displayPerPage <= (response?.headers['x-total-count'] ?? -1) ) {
       setLocalData(fetchedData);
     } else {
       setLocalData(null);
@@ -52,6 +52,11 @@ export default function UsersPage() {
     value: col.accessor as string,
   }));
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedUserName]);
+
+
   return (
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-center">
@@ -61,7 +66,6 @@ export default function UsersPage() {
               This list of users is retrieved from open API: https://jsonplaceholder.typicode.com/users
             </p>
           </div>
-          <Search setValue={setUserName} placeholder={'Search user...'} setCurrentPage={setCurrentPage}/>
 
           <MultiSelectDropdwon formFieldName={'columns'} options={dropdownOptions}
                                onChange={(item: any) => {

@@ -62,7 +62,9 @@ export const Table = <T,>({ data, columns, defaultSort, actions }: TableProps<T>
                     sortedData?.map((row, rowIndex) => (
                         <tr key={rowIndex}>
                             {columns.map((col) => (
-                                <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}><p className={'truncate max-w-96'}>{row[col.accessor] as any}</p></td>
+                                <td className={'whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0'} key={col.accessor as string}><p className={'truncate max-w-96'}>
+                                    {row[col.accessor] as string}
+                                </p></td>
                             ))}
                             {!!actions && (
                                 <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0 text-center">

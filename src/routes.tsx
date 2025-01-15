@@ -4,6 +4,7 @@ import DashboardPage from "./pages/DashboardPage.tsx";
 import Layout from "./components/Layout.tsx";
 import UsersPage from "./pages/UsersPage.tsx";
 import PostsPage from "./pages/PostsPage.tsx";
+import SearchProvider from "@/hooks/SearchContext.tsx";
 
 // Guest routes that need no authentication
 const guestRoutes: RouteObject[] = [
@@ -13,7 +14,7 @@ const guestRoutes: RouteObject[] = [
     },
     {
         path: '/',
-        element: <Layout />,
+        element: <SearchProvider><Layout /></SearchProvider>,
         children: [
             { path: '/dashboard', element: <DashboardPage /> },
             { path: '/users', element: <UsersPage /> },
